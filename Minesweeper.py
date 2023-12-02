@@ -1,28 +1,29 @@
-import pygame
-import sys
+import numpy as np
 
-# pygame setup
-pygame.init()
-screen = pygame.display.set_mode((1280, 720))
-clock = pygame.time.Clock()
-running = True
+class Minesweeper:
+    def __init__(self, rows, cols, mines):
+        self.rows = rows
+        self.cols = cols
+        self.mines = mines
+        self.board = np.zeros((rows, cols), dtype=int)
+        self.revealed = np.zeros((rows, cols), dtype=bool)
 
-while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    def place_mines(self):
+        mine_locations = np.random.choice(self.rows * self.cols, self.mines, replace=False)
+        self.board.flat[mine_locations] = -1
 
-    # fill the screen with a color to wipe away anything from last frame
-    screen.fill("purple")
+    def reveal_cell(self, row, col):
+        if not self.revealed[row, col]:
+            self.revealed[row, col] = True
+            return self.board[row, col]
 
-    # RENDER YOUR GAME HERE
+    def is_mine(self, row, col):
+        return self.board[row, col] == -1
 
-    # flip() the display to put your work on screen
-    pygame.display.flip()
-
-    clock.tick(60)  # limits FPS to 60
-
-pygame.quit()
-
+    def count_adjacent_mines(self, row, col):
+        count = 0
+        for i in range(max(0, row-1), min(self.rows, row + 2)):
+            for j in range(max(0, col-1), min(self.cols, col + 2)):
+                if self.is_mine(i, j):
+                    count += 1
+        return count
