@@ -13,7 +13,12 @@ minesweeper_game.place_mines()
 pygame.init()
 screen = pygame.display.set_mode((cols * cell_size, rows * cell_size))
 clock = pygame.time.Clock()
+font = pygame.font.Font(None, 36)
 running = True
+
+WHITE = (255, 255, 255)
+GREY = (169, 169, 169)
+RED = (255, 0, 0)
 
 while running:
     # poll for events
@@ -30,19 +35,29 @@ while running:
             revealed_value = minesweeper_game.reveal_cell(row, col)
 
             if minesweeper_game.is_mine(row, col):
-                print("Game Over! Mine hit.")
+                text = font.render("Game Over! Mine hit.", True, RED)
+                screen.blit(text, (10, rows*cell_size + 10))
             else:
-                print(f"Reveal value: {revealed_value}")
-                print(f"Adjacent mines: {minesweeper_game.count_adjacent_mines(row, col)}")
+                reveal_text = f"Reveal value: {revealed_value}"
+                adjacent_mines_text = f"Adjacent mines: {minesweeper_game.count_adjacent_mines(row, col)}"
 
-    screen.fill((255, 255, 255))
+                reveal_surface = font.render(reveal_text, True, GREY)
+                adjacent_mines_surface = font.render(adjacent_mines_text, True, GREY)
+
+                screen.blit(reveal_surface, (10, rows * cell_size + 10))
+                screen.blit(reveal_surface, (10, rows * cell_size + 40))
+
+    screen.fill(WHITE)
 
     for i in range(rows):
         for j in range(cols):
             rect = pygame.Rect(j * cell_size, i * cell_size, cell_size, cell_size)
 
             if minesweeper_game.revealed[i, j]:
-                pygame.draw.rect(screen, (200, 200, 200), rect)
+                pygame.draw.rect(screen, GREY, rect)
+            
+            if minesweeper_game.is_mine(i, j):
+                pygame.draw.circle(screen, RED, rect.center, cell_size // 2)
 
     # flip() the display to put your work on screen
     pygame.display.flip()
