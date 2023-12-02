@@ -25,7 +25,7 @@ while running:
     # RENDER YOUR GAME HERE
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
-            row, col = y, x
+            row, col = y // cell_size, x // cell_size  
 
             revealed_value = minesweeper_game.reveal_cell(row, col)
 
@@ -35,7 +35,7 @@ while running:
                 print(f"Reveal value: {revealed_value}")
                 print(f"Adjacent mines: {minesweeper_game.count_adjacent_mines(row, col)}")
 
-    screen.fill(255, 255, 255)
+    screen.fill((255, 255, 255))
 
     for i in range(rows):
         for j in range(cols):
