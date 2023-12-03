@@ -13,22 +13,38 @@ class Minesweeper_Board:
 
         for index in mine_indices:
             row, col = divmod(index, self.cols)
-            self.board[row][col].setMine()
+            self.board[row][col].set_mine()
 
-    def reveal_cell(self, row, col):
-        # Moving control logic to the cell.py class
-        if not self.board[row][col].isHidden:
-            self.revealed[row, col] = True
-            print(self.board[row][col].isMine)
-            return self.board[row, col]
-
-    def is_mine(self, row, col):
-        return self.board[row][col].isMine
+    def calculate_adjacent_mines(self):
+        for i in range(self.rows):
+            for j in range(self.cols):
+                cell = self.board[i][j]
+                if not cell.isMine:
+                    adjacent_mines = self.count_adjacent_mines(i, j)
+                    cell.set_adjacent_value(adjacent_mines)
 
     def count_adjacent_mines(self, row, col):
         count = 0
-        for i in range(max(0, row-1), min(self.rows, row + 2)):
-            for j in range(max(0, col-1), min(self.cols, col + 2)):
-                if self.is_mine(i, j):
+
+        for i in range(max(0, row - 1), min(self.rows, row + 2)):
+            for j in range(max(0, col - 1), min(self.cols, col + 2)):
+                if not (i == row and j == col) and self.is_mine(self.board[i][j]):
                     count += 1
+
         return count
+
+    def reveal_cell(self, cell):
+        # Moving control logic to the cell.py class
+        if not cell.revealed:
+            return cell.reveal()
+
+    def is_mine(self, cell):
+        return cell.isMine
+
+    def is_revealed(self, cell):
+        return cell.revealed
+
+    def cell_adjacent_value(self, cell):
+        return cell.adjacentValue
+
+    

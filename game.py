@@ -8,6 +8,7 @@ mines = 20
 
 minesweeper_game = Minesweeper_Board(rows, cols, mines)
 minesweeper_game.place_mines()
+minesweeper_game.calculate_adjacent_mines()
 
 # pygame setup
 pygame.init()
@@ -18,6 +19,7 @@ running = True
 
 WHITE = (255, 255, 255)
 GREY = (169, 169, 169)
+BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 
 while running:
@@ -28,39 +30,44 @@ while running:
             running = False
 
     # RENDER YOUR GAME HERE
-    # Need a start screen that is optionally displayed for user vs ai
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
             row, col = y // cell_size, x // cell_size  
+            cell = minesweeper_game.board[row][col]
 
-            revealed_value = minesweeper_game.reveal_cell(row, col)
+            revealed_value = minesweeper_game.reveal_cell(cell)
 
-# Feedback doesn't render atm
-            if minesweeper_game.is_mine(row, col):
-                # At some point I should add a game over/restart screen here
-                text = font.render("Game Over! Mine hit.", True, RED)
-                screen.blit(text, (10, rows*cell_size + 10))
+            if minesweeper_game.is_mine(cell):
+                print('Mine Hit')
             else:
-                reveal_text = f"Reveal value: {revealed_value}"
-                adjacent_mines_text = f"Adjacent mines: {minesweeper_game.count_adjacent_mines(row, col)}"
-
-                reveal_surface = font.render(reveal_text, True, GREY)
-                adjacent_mines_surface = font.render(adjacent_mines_text, True, GREY)
-
-                screen.blit(reveal_surface, (10, rows * cell_size + 10))
-                screen.blit(adjacent_mines_surface, (10, rows * cell_size + 40))
-
+                print('Safe')
+    
     screen.fill(WHITE)
 
     for i in range(rows):
         for j in range(cols):
             rect = pygame.Rect(j * cell_size, i * cell_size, cell_size, cell_size)
+            cell = minesweeper_game.board[i][j]
 
-            if minesweeper_game.revealed[i, j]:
+            # Draw revealed cells in grey with black border
+            if minesweeper_game.is_revealed(cell):
+
+                if minesweeper_game.is_mine(cell):
+                    pygame.draw.rect(screen, RED, rect)
+                    pygame.draw.rect(screen, BLACK, rect, 1)
+
+                else:
+                    revealed_value = minesweeper_game.cell_adjacent_value(cell)
+                    text_surface = font.render(str(revealed_value), True, BLACK)
+                    text_rect = text_surface.get_rect(center=rect.center)
+                    pygame.draw.rect(screen, WHITE, rect)
+                    pygame.draw.rect(screen, BLACK, rect, 1)
+                    screen.blit(text_surface, text_rect)
+
+            # Draw hidden cells in grey
+            else:
                 pygame.draw.rect(screen, GREY, rect)
-            
-            if minesweeper_game.is_mine(i, j):
-                pygame.draw.circle(screen, RED, rect.center, cell_size // 2)
+                pygame.draw.rect(screen, BLACK, rect, 1)
 
     # flip() the display to put your work on screen
     pygame.display.flip()

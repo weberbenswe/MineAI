@@ -5,13 +5,15 @@ class Cell:
         self.xPos = xPos
         self.yPos = yPos
         self.isMine = False
-        self.isHidden = True
+        self.revealed = False
+        self.adjacentValue = 0
 
-    def setMine(self):
+    def set_mine(self):
         self.isMine = True
 
-    def selected(self):
-        self.isHidden = False
+    def reveal(self):
+        self.revealed = True
 
-    def isHidden(self):
-        return self.isHidden
+    def set_adjacent_value(self, value):
+        self.adjacentValue = value
+    
