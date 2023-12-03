@@ -1,12 +1,12 @@
 import pygame
-from minesweeper import Minesweeper
+from minesweeper import Minesweeper_Board
 import sys
 
 rows, cols = 10, 10
-cell_size = 30
+cell_size = 50
 mines = 20
 
-minesweeper_game = Minesweeper(rows, cols, mines)
+minesweeper_game = Minesweeper_Board(rows, cols, mines)
 minesweeper_game.place_mines()
 
 # pygame setup
@@ -28,13 +28,16 @@ while running:
             running = False
 
     # RENDER YOUR GAME HERE
+    # Need a start screen that is optionally displayed for user vs ai
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
             row, col = y // cell_size, x // cell_size  
 
             revealed_value = minesweeper_game.reveal_cell(row, col)
 
+# Feedback doesn't render atm
             if minesweeper_game.is_mine(row, col):
+                # At some point I should add a game over/restart screen here
                 text = font.render("Game Over! Mine hit.", True, RED)
                 screen.blit(text, (10, rows*cell_size + 10))
             else:
@@ -45,7 +48,7 @@ while running:
                 adjacent_mines_surface = font.render(adjacent_mines_text, True, GREY)
 
                 screen.blit(reveal_surface, (10, rows * cell_size + 10))
-                screen.blit(reveal_surface, (10, rows * cell_size + 40))
+                screen.blit(adjacent_mines_surface, (10, rows * cell_size + 40))
 
     screen.fill(WHITE)
 
